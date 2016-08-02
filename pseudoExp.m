@@ -79,18 +79,18 @@ function pseudoExp( expmode, subcode, sex, age, session, phase, block, button, r
 
             % set keys for real and pseudo stimuli
         if strcmp(button, 'left')
-            realButton = 'j';      % USE 1 & 2 FOR MRI
-            pseudoButton = 'k';
+            realButton = '1';      % USE 1 & 2 FOR MRI
+            pseudoButton = '2';
         elseif strcmp(button, 'right')
-            realButton = 'k';
-            pseudoButton = 'j';
+            realButton = '2';
+            pseudoButton = '1';
         else
             error('Unexpected button type.');
         end
 
-        isTest = strcmp(phase,'Test');
-        if strcmp(phase,'word1') || strcmp(phase,'word2')
-            isWord = 0;
+        isTest = strcmp(phase,'test');
+        if strcmp(block, 'word') || strcmp(block,'word1') || strcmp(block,'word2')
+            isWord = 1;
         end
 
         %Set up the sound files for correct/incorrect responses and the
@@ -387,7 +387,7 @@ function pseudoExp( expmode, subcode, sex, age, session, phase, block, button, r
         DrawFormattedText(winID, instructions, 'center', centreY-150, 0);
         DrawFormattedText(winID, quickAccurate, 'center', centreY-50, 0);
         DrawFormattedText(winID, pressAnyKey, 'center', centreY+50, 0);
-        DrawFormattedText(winID, 'Press q to quit', 'center', centreY+150, 0); %quitKeyQ
+        DrawFormattedText(winID, 'Press ''q'' to quit', 'center', centreY+150, 0); %quitKeyQ
         Screen('Flip',winID);
         KbStrokeWait;
 

@@ -14,7 +14,7 @@ function ps = pseudoStim( thisMeta )
                       'phase','',...
                       'wordRelation','' ...
                          );
-     if ~(isempty(thisMeta))                
+     if ~(isempty(thisMeta))
         ps.metaData = thisMeta;
         md = regexp(ps.metaData,',','split');
         %fprintf('md: %s\n', ps.metaData);
@@ -34,10 +34,9 @@ function ps = pseudoStim( thisMeta )
         ps.wordRelation = char(md(5));
         if (strcmp(ps.wordRelation,'ortho')) && (strcmpi(ps.phase,'test'))
             ps.orthoNeighbor = char(md(6));
-            ps.correctKey = 'pseudo';
         else
             ps.correctKey = md(4);
         end
 
       end
-   end     
+   end

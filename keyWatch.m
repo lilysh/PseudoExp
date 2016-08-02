@@ -20,21 +20,29 @@ while 1
     if down
         press = KbName(code);
         if iscell(press)
-            % fprintf('You mashed some keys, congratulations!\n');
             press = press{1};
         end
 
-        if strcmp(press,'j') || strcmp(press,'k')
-            key = press;
+        if strcmp(press,'1') || strcmp(press,'1!')
+            key = '1';
             time = timedown;
             while elapsedTime < stopTime
-            elapsedTime = toc;
+              elapsedTime = toc;
+            end
+            break
+        elseif strcmp(press,'2') || strcmp(press,'2@')
+            key = '2';
+            time = timedown;
+            while elapsedTime < stopTime
+              elapsedTime = toc;
             end
             break
         elseif strcmp(press, 'q')
             key = press;
             time = 0;
             break
+        else
+            fprintf('%s', press);
         end
 
     end
