@@ -505,6 +505,7 @@ function pseudoExp( expmode, subcode, sex, age, session, phase, block, button, r
                 thisTrial.responseType = 'NoResponse';
             end
             completedTrials(i) = thisTrial;
+            correct = (thisTrial.pseudoStim.correctKey == thisTrial.responseKey);
 
             %Print trial info to console to monitor perfomance during
             %scanning

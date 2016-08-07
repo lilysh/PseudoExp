@@ -9,9 +9,9 @@ function [ key, time ] = keyWatch( stopTime, correctKey, right, wrong )
 tic;
 
 if nargin> 3
-  practiceMode = 1
+  practiceMode = 1;
 else
-  practiceMode = 0
+  practiceMode = 0;
 end
 
 while 1
