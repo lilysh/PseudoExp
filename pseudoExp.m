@@ -213,7 +213,7 @@ function pseudoExp( expmode, subcode, sex, age, session, phase, block, button, r
             studyStims = [];
         end
 
-        %Check if we ae resuming and set file permission accordingly
+        %Check if we are resuming and set file permission accordingly
         if resume
             %Setting file permissions when resuming
             fid=fopen(fileName, 'a');
@@ -375,11 +375,12 @@ function pseudoExp( expmode, subcode, sex, age, session, phase, block, button, r
         Screen('LoadNormalizedGammaTable',winID,gtable); % DON'T DO THIS IF USING DATAPIXX TO DISPLAY IMAGES
 
             % display instructions and wait for key press to begin experiment
-        if strcmp(block,'word1') || strcmp(block,'word2')
+        if strcmpi(block,'word1') || strcmpi(block,'word2')
             thing = 'word';
         else
             thing = block;
         end
+        thing = lower(thing);
 
         instructions = ['Press ''' realButton ''' for ' thing 's and ''' pseudoButton ''' for non-' thing 's'];
         quickAccurate = 'Answer as quickly and accurately as possible';
@@ -387,7 +388,7 @@ function pseudoExp( expmode, subcode, sex, age, session, phase, block, button, r
         DrawFormattedText(winID, instructions, 'center', centreY-150, 0);
         DrawFormattedText(winID, quickAccurate, 'center', centreY-50, 0);
         DrawFormattedText(winID, pressAnyKey, 'center', centreY+50, 0);
-        DrawFormattedText(winID, 'Press ''q'' to quit', 'center', centreY+150, 0); %quitKeyQ
+        DrawFormattedText(winID, 'Press ''Q'' to quit', 'center', centreY+150, 0); %quitKeyQ
         Screen('Flip',winID);
         KbStrokeWait;
 
@@ -426,7 +427,11 @@ function pseudoExp( expmode, subcode, sex, age, session, phase, block, button, r
 
             %wait 150 ms before looking for key stroke
             delay(.150);
-            [key,keyTime] = keyWatch(stimdurS-0.250);
+            if strcmpi(phase,'practice')
+                [key,keyTime] = keyWatch(stimdurS-0.250, thisTrial.pseudoStim.correctKey, right, wrong);
+            else
+                [key,keyTime] = keyWatch(stimdurS-0.250);
+            end
             % if a key was pressed, don't check for any more this trial
             if keyTime ~=0
                 keyFound = 1;
@@ -438,9 +443,13 @@ function pseudoExp( expmode, subcode, sex, age, session, phase, block, button, r
             Screen('PutImage', winID, mask);
             realMaskStart = Screen('Flip',winID,maskStart);
 
-            %If the reponse has been recording do not check for input
+            %If the reponse has been recorded do not check for input
             if ~keyFound
-                [key,keyTime] = keyWatch(maskdurS);
+                if strcmpi(phase,'practice')
+                    [key,keyTime] = keyWatch(maskdurS, thisTrial.pseudoStim.correctKey, right, wrong);
+                else
+                    [key,keyTime] = keyWatch(maskdurS);
+                end
                 if keyTime ~=0
                     keyFound = 1;
                 end
@@ -454,7 +463,11 @@ function pseudoExp( expmode, subcode, sex, age, session, phase, block, button, r
             realFixStart = Screen('Flip',winID,fixStart);
 
             if ~keyFound
-                [key,keyTime] = keyWatch(itrialiS);
+                if strcmpi(phase,'practice')
+                    [key,keyTime] = keyWatch(itrialiS, thisTrial.pseudoStim.correctKey, right, wrong);
+                else
+                    [key,keyTime] = keyWatch(itrialiS);
+                end
             end
 
             % get stimulus timing data
@@ -465,7 +478,7 @@ function pseudoExp( expmode, subcode, sex, age, session, phase, block, button, r
             if strcmp(key, 'q') % quit if q was pressed
               sca();
               ListenChar(0);
-              fprintf('Block terminated early');
+              fprintf('### Block terminated early ###\n\n');
               exit();
             elseif keyTime == 0          % if no response
                 responseTime = 0;
@@ -492,17 +505,6 @@ function pseudoExp( expmode, subcode, sex, age, session, phase, block, button, r
                 thisTrial.responseType = 'NoResponse';
             end
             completedTrials(i) = thisTrial;
-
-            %If in practice give feedback on the reponse
-            correct = (thisTrial.pseudoStim.correctKey == thisTrial.responseKey);
-             if strcmpi(phase,'practice')
-
-                 if correct
-                     PsychPortAudio('Start', right, 1, 0, 1);
-                 else
-                     PsychPortAudio('Start', wrong, 1, 0, 1);
-                 end
-             end
 
             %Print trial info to console to monitor perfomance during
             %scanning
