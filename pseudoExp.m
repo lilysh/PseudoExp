@@ -91,6 +91,8 @@ function pseudoExp( expmode, subcode, sex, age, session, phase, block, button, r
         isTest = strcmp(phase,'test');
         if strcmp(block, 'word') || strcmp(block,'word1') || strcmp(block,'word2')
             isWord = 1;
+        else
+          isWord = 0;
         end
 
         %Set up the sound files for correct/incorrect responses and the
@@ -182,9 +184,6 @@ function pseudoExp( expmode, subcode, sex, age, session, phase, block, button, r
             thisTrial = pseudoTrial(stim);
             completedTrials(i) = thisTrial;
         end
-
-
-
 
         %Set the appropriate file paths to get legends and stims as well as
         %record data and back ups
@@ -344,7 +343,12 @@ function pseudoExp( expmode, subcode, sex, age, session, phase, block, button, r
              fidCompleted = fopen(stimCompleted,'a');
          end
 
-        % Here we are preloading the images
+        [winID,winRect] = Screen('OpenWindow',screenNumber,bglumRGB);
+
+        % Set blend function for transparency
+        Screen('BlendFunction', winID, 'GL_SRC_ALPHA', 'GL_ONE_MINUS_SRC_ALPHA');
+
+        % Here we are preloading the images and converting them to textures
         for i = 1:numTrials
             %Get current stimuli
             thisStim = stimuli(i);
@@ -352,12 +356,28 @@ function pseudoExp( expmode, subcode, sex, age, session, phase, block, button, r
             targetPath=strcat(rootPath, stimPath, thisStim.fileName);
             %make sure it is string
             stringie = char(targetPath);
-            %load image and store it in an array
-            img = imread(stringie);
-            stimulusImage{i} = img;
+            %load image
+            [img, rect, alpha] = imread(stringie, 'png');
+            % Words and faces are in RGB colorspace, objects in grayscale
+            if isWord
+              bgColor = [1 1 1];
+            else
+              img = repmat(img,[1 1 3]);
+            end
+
+            % alphaMask = im2double(alpha);
+            % imgComposite = im2uint8(double(img).*alphaMask);
+            r = img(:, :, 1);
+            g = img(:, :, 2);
+            b = img(:, :, 3);
+            img = cat(3, r, g, b, alpha);
+            %disp(alpha);
+            %convert image to a Psychtoolbox texture for faster loading
+            tex = Screen('MakeTexture', winID, img);
+            %store it in an array
+            stimulusImage{i} = tex;
         end
 
-        [winID,winRect] = Screen('OpenWindow',screenNumber,bglumRGB);
         %HideCursor;
         ListenChar(2);
         %fprintf('about to focus window');
@@ -388,7 +408,7 @@ function pseudoExp( expmode, subcode, sex, age, session, phase, block, button, r
         DrawFormattedText(winID, instructions, 'center', centreY-150, 0);
         DrawFormattedText(winID, quickAccurate, 'center', centreY-50, 0);
         DrawFormattedText(winID, pressAnyKey, 'center', centreY+50, 0);
-        DrawFormattedText(winID, 'Press ''Q'' to quit', 'center', centreY+150, 0); %quitKeyQ
+        DrawFormattedText(winID, 'Press ''q'' to quit', 'center', centreY+150, 0); %quitKeyQ
         Screen('Flip',winID);
         KbStrokeWait;
 
@@ -407,7 +427,7 @@ function pseudoExp( expmode, subcode, sex, age, session, phase, block, button, r
 
             %Show Stimuli and as well as get fixation duration and stim start
             %time
-            Screen('PutImage', winID, stimulusImage{i});
+            Screen('DrawTexture', winID, stimulusImage{i});
             realStimStart = Screen('Flip',winID,stimStart);
             realFixDur = realStimStart - realFixStart;
 
@@ -510,7 +530,7 @@ function pseudoExp( expmode, subcode, sex, age, session, phase, block, button, r
             %Print trial info to console to monitor perfomance during
             %scanning
             fprintf('\nTrial\tOnset\tStimDur\tMaskDur\tFixDur\n');
-            fprintf('%d\t%3.2f\t%1.4f\t%1.4f\t%3.4f\n\n',i,thisTrial.onsetTime,thisTrial.stimDur,thisTrial.maskDur,thisTrial.fixDur);
+            fprintf('%d\t\t%3.2f\t%1.4f\t%1.4f\t%3.4f\n\n',i,thisTrial.onsetTime,thisTrial.stimDur,thisTrial.maskDur,thisTrial.fixDur);
             fprintf('Trial:\t%d\nResponseType:\t%s\nRxnTime:\t%1.4f\nAccuracy:\t%d\nDispCount:\t%d\nStimulus:\t%s\nStimulusType:\t%s\nStimulusCategory:\t%s\n\n',i,thisTrial.responseType,thisTrial.responseTime,correct,char(thisTrial.pseudoStim.stimCount),thisTrial.pseudoStim.stimID,thisTrial.pseudoStim.stimType, thisTrial.pseudoStim.wordRelation);
 
             %Print results and backup
