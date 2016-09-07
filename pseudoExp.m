@@ -503,7 +503,9 @@ function pseudoExp( expmode, subcode, sex, age, session, phase, block, button, r
             elseif keyTime == 0          % if no response
                 responseTime = 0;
                 key = '0';
-                PsychPortAudio('Start', wrong, 1, 0, 1);    %play the wrong sound
+                if strcmpi(phase,'practice')
+                    PsychPortAudio('Start', wrong, 1, 0, 1);    %play the wrong sound
+                end
             else                     % else calculate response time
                 responseTime = keyTime - realStimStart;
             end
