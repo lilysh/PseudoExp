@@ -10,4 +10,4 @@ clear();
 
 %web app generates param files
 
-pseudoExp(0, 'S01', 'f', '26', 1, 'practice', 'word', 'left', 0);
+pseudoExp(0, 'S01', 1, 'practice', 'word', 'one', 0);

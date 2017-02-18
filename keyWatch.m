@@ -2,8 +2,6 @@ function [ key, time ] = keyWatch( stopTime, correctKey, right, wrong )
 % KEYWATCH  Uses KbCheck to watch keyboard for specified amount of time
 %           (between screen flips in experiment).
 %           Returns which key was pressed and time of key press.
-%
-% Lily Solomon-Harris, January 2015
 
 % start timing
 tic;
@@ -33,7 +31,7 @@ while 1
             key = '1';
             time = timedown;
             if practiceMode
-              %If in practice give feedback on the reponse
+              % if in practice give feedback on the reponse
               if strcmp(correctKey, key)
                   PsychPortAudio('Start', right, 1, 0, 1);
               else
@@ -48,7 +46,7 @@ while 1
             key = '2';
             time = timedown;
             if practiceMode
-              %If in practice give feedback on the reponse
+              % if in practice give feedback on the reponse
               if strcmp(correctKey, key)
                   PsychPortAudio('Start', right, 1, 0, 1);
               else
