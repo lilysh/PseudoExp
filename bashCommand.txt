@@ -1,0 +1,1 @@
+/Applications/MATLAB_R2016b.app/bin/matlab —nojvm -nodesktop -nosplash -r "pseudoExp(0,'S01',1,'practice','word','one',0)"
